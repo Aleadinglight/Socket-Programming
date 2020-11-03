@@ -20,7 +20,6 @@ int main(int argc, char** argv) {
 		return 1;
 	}
 	printf("Winsock API ready\n");
-	printf("\tVersion: %u", wsaData.wVersion);
 	//now we can make socket 
 	SOCKET server = socket(AF_INET, SOCK_DGRAM, 0);
 	if (server == INVALID_SOCKET) {
