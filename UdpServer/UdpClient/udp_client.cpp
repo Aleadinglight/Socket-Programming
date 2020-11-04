@@ -48,7 +48,7 @@ void udp_client(SOCKET s, char* ipv4, unsigned short port) {
 		memset(sbuf, 0, sizeof(sbuf));
 		printf("Message >> ");
 		fgets(sbuf, sizeof(sbuf), stdin);
-		if (strcmp(sbuf, "QUIT") == 0)
+		if (strcmp(sbuf, "QUIT\n") == 0)
 			break;
 		int result = sendto(s, sbuf, strlen(sbuf), 0, (SOCKADDR*)& remoteAddress, remoteAddressSize);
 		// prepare for receiving

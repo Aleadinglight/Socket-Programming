@@ -49,7 +49,7 @@ void udp_server(SOCKET serverSocket, unsigned short port) {
 	sa.sin_family = AF_INET;
 	// 0.0.0.0
 	sa.sin_addr.s_addr = htonl(INADDR_ANY);
-	// run netstat -an to see available ports
+	// run netstat -an | find "UDP" to see available ports
 	// host to network orer (Endianness)
 	sa.sin_port = htons(port);
 	int result = bind(serverSocket, (SOCKADDR*)& sa, sizeof(sa));
