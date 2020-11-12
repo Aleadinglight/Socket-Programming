@@ -68,12 +68,12 @@ void udp_server(SOCKET serverSocket, unsigned short port) {
 		memset(rbuf, 0, sizeof(rbuf));
 		SOCKADDR_IN serverAddress;
 		int serverAddressSize = sizeof(serverAddress);
-		result = recvfrom(serverSocket, rbuf, sizeof(rbuf), 0, (SOCKADDR *)&serverAddress, &serverAddressSize);
+		result = recvfrom(serverSocket, rbuf, sizeof(rbuf), 0, (SOCKADDR *) &serverAddress, &serverAddressSize);
 		// for receiving and sending
 		printf("Received from: %s:%d> %s\n", inet_ntoa(serverAddress.sin_addr), ntohs(serverAddress.sin_port), rbuf);
 		gethostname(hname, sizeof(hname));
 		sprintf(sbuf, "%s >>> %s", hname, rbuf);
-		result = sendto(serverSocket, sbuf, strlen(sbuf), 0, (SOCKADDR*)& serverAddress, serverAddressSize);
+		result = sendto(serverSocket, sbuf, strlen(sbuf), 0, (SOCKADDR*) &serverAddress, serverAddressSize);
 	}
 	closesocket(serverSocket);
 }

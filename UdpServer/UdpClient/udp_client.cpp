@@ -56,7 +56,11 @@ void udp_client(SOCKET s, char* ipv4, unsigned short port) {
 		if (result == SOCKET_ERROR) {
 			printf("Send failed");
 		}
-		result = recvfrom(s, rbuf, sizeof(rbuf), 0, (SOCKADDR *) &remoteAddress, &sizeOfRemoteAddress);
+		// Check the server
+		SOCKADDR_IN toBeCheckAddress;
+		int toBeCheckAddressSize = sizeof(toBeCheckAddress);
+		result = recvfrom(s, rbuf, sizeof(rbuf), 0, (SOCKADDR *) & toBeCheckAddress, &toBeCheckAddressSize);
+		
 		printf("Message from server: %s\n", rbuf);
 	}
 }
