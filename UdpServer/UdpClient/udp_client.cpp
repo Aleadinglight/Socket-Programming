@@ -37,20 +37,26 @@ int main(int argc, char** argv) {
 
 void udp_client(SOCKET s, char* ipv4, unsigned short port) {
 	SOCKADDR_IN remoteAddress;
-	int remoteAddressSize = sizeof(remoteAddress);
 	// For ipv4
 	remoteAddress.sin_family = AF_INET;
 	remoteAddress.sin_addr.s_addr = inet_addr(ipv4);
 	remoteAddress.sin_port = htons(port);
 	printf("UDP client is ready to send.\nType messages (QUIT will exit)\n");
 	while (1) {
-		char sbuf[100];
+		char sbuf[100], rbuf[130];
 		memset(sbuf, 0, sizeof(sbuf));
+		int sizeOfRemoteAddress = sizeof(remoteAddress);
 		printf("Message >> ");
 		fgets(sbuf, sizeof(sbuf), stdin);
 		if (strcmp(sbuf, "QUIT\n") == 0)
 			break;
-		int result = sendto(s, sbuf, strlen(sbuf), 0, (SOCKADDR*)& remoteAddress, remoteAddressSize);
+		// This is UDP so there is no connection established, only datagram is sent
+		int result = sendto(s, sbuf, strlen(sbuf), 0, (SOCKADDR *) &remoteAddress, sizeof(remoteAddress));
 		// prepare for receiving
+		if (result == SOCKET_ERROR) {
+			printf("Send failed");
+		}
+		result = recvfrom(s, rbuf, sizeof(rbuf), 0, (SOCKADDR *) &remoteAddress, &sizeOfRemoteAddress);
+		printf("Message from server: %s\n", rbuf);
 	}
 }

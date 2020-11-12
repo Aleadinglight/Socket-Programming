@@ -2,6 +2,8 @@
 // datagrams from clients, and the server bounce back the information with
 // server data 
 
+#define _CRT_SECURE_NO_WARNINGS
+#define _WINSOCK_DEPRECATED_NO_WARNINGS
 #include <stdio.h>
 #include <winsock2.h>
 // Link build environmeent to Winsock library
@@ -49,22 +51,29 @@ void udp_server(SOCKET serverSocket, unsigned short port) {
 	sa.sin_family = AF_INET;
 	// 0.0.0.0
 	sa.sin_addr.s_addr = htonl(INADDR_ANY);
-	// run netstat -an | find "UDP" to see available ports
+	// run netstat -an | find "UDP" to see unavailable ports
 	// host to network orer (Endianness)
 	sa.sin_port = htons(port);
 	int result = bind(serverSocket, (SOCKADDR*)& sa, sizeof(sa));
 	if (result == SOCKET_ERROR) {
 		printf("Bind failed, please check if the port is available\n");
+		closesocket(serverSocket);
+		return;
 	}
 
 	printf("Bind ok with port number %d\n", port);
 	while (1) {
 		// for receiving and sending
-		char rbuf[100];
+		char rbuf[100], hname[30], sbuf[130];
 		memset(rbuf, 0, sizeof(rbuf));
-		result = recvfrom(serverSocket, rbuf, sizeof(rbuf), 0, NULL, NULL);
+		SOCKADDR_IN serverAddress;
+		int serverAddressSize = sizeof(serverAddress);
+		result = recvfrom(serverSocket, rbuf, sizeof(rbuf), 0, (SOCKADDR *)&serverAddress, &serverAddressSize);
 		// for receiving and sending
-		printf("Received: %s\n", rbuf);
+		printf("Received from: %s:%d> %s\n", inet_ntoa(serverAddress.sin_addr), ntohs(serverAddress.sin_port), rbuf);
+		gethostname(hname, sizeof(hname));
+		sprintf(sbuf, "%s >>> %s", hname, rbuf);
+		result = sendto(serverSocket, sbuf, strlen(sbuf), 0, (SOCKADDR*)& serverAddress, serverAddressSize);
 	}
-	return;
+	closesocket(serverSocket);
 }
