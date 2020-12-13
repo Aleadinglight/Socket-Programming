@@ -10,20 +10,32 @@
         const MAX_MESSAGES = 10;
         var totalMess = 0;
         var oldt = new Date().getTime();
-        var ws = new WebSocket("ws://192.168.73.204:11111/"),
-            messages = document.createElement('ul');
+        var ws = new WebSocket("ws://127.0.0.1:11111/"),
+            messages = document.createElement('ul'),
+            totalMessLabel = document.createElement('h3'),
+            totalMessText = document.createTextNode(totalMess);
+        totalMessLabel.appendChild(totalMessText);
         ws.onmessage = function (event) {
             totalMess++;
             var newt = new Date().getTime();
             var tdiff = (newt - oldt);
             oldt = newt;
-            var messages = document.getElementsByTagName('ul')[0],
+            var totalMessLabel = document.getElementsByTagName('h3')[0],
+                messages = document.getElementsByTagName('ul')[0],
                 message = document.createElement('li'),
-                content = document.createTextNode(event.data + ' different:' + tdiff);
+                content = document.createTextNode(event.data + ', time different: ' + tdiff*1.000/1000+ 's'),
+                countSpan = document.createElement('span'),
+                count = document.createTextNode(totalMess + ".");
+
+            totalMessLabel.textContent = "Total messages: "+ totalMess;
+            countSpan.setAttribute('style', 'color:red');
+            message.setAttribute('style', 'list-style-type: none');
             if (tdiff < 1500) {
                 console.log(tdiff);
-                message.setAttribute('style', 'color: red');
+                message.style.color = 'red';
             }
+            countSpan.appendChild(count);
+            message.appendChild(countSpan);
             message.appendChild(content);
             messages.appendChild(message);
             if (totalMess > MAX_MESSAGES) {
@@ -36,6 +48,7 @@
         ws.onclose = function (event) {
             console.log("websocket closed");
         }
+        document.body.appendChild(totalMessLabel);
         document.body.appendChild(messages);
     </script>
 </body>
