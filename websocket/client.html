@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>WebSocket</title>
+</head>
+
+<body>
+    <script>
+        const MAX_MESSAGES = 10;
+        var totalMess = 0;
+        var oldt = new Date().getTime();
+        var ws = new WebSocket("ws://192.168.73.204:11111/"),
+            messages = document.createElement('ul');
+        ws.onmessage = function (event) {
+            totalMess++;
+            var newt = new Date().getTime();
+            var tdiff = (newt - oldt);
+            oldt = newt;
+            var messages = document.getElementsByTagName('ul')[0],
+                message = document.createElement('li'),
+                content = document.createTextNode(event.data + ' different:' + tdiff);
+            if (tdiff < 1500) {
+                console.log(tdiff);
+                message.setAttribute('style', 'color: red');
+            }
+            message.appendChild(content);
+            messages.appendChild(message);
+            if (totalMess > MAX_MESSAGES) {
+                messages.removeChild(messages.getElementsByTagName('li')[0]);
+            }
+        };
+        ws.onopen = function (event) {
+            console.log("websocket opened");
+        }
+        ws.onclose = function (event) {
+            console.log("websocket closed");
+        }
+        document.body.appendChild(messages);
+    </script>
+</body>
+
+</html>

@@ -2,6 +2,7 @@
 // The server replies to client with server information
 
 #pragma comment(lib, "ws2_32.lib")
+#define _CRT_SECURE_NO_WARNINGS
 #define _WINSOCK_DEPRECATED_NO_WARNINGS
 #include <stdio.h>
 #include <winsock2.h>
@@ -51,7 +52,20 @@ void tcp_server(SOCKET ls, short int port) {
 		// ONLY in accept() function, a TCP server can get client address
 		SOCKET cs = accept(ls, (SOCKADDR*)& ca, &calen);
 		if (cs != SOCKET_ERROR) {
-			printf("%s:%d comes in\n", inet_ntoa(ca.sin_addr), ntohs(ca.sin_port)); break;
+			printf("%s:%d comes in\n", inet_ntoa(ca.sin_addr), ntohs(ca.sin_port));
+		}
+		char greeting[] = "Welcome to TCP server...\n";
+		r = send(cs, greeting, strlen(greeting), 0);
+		while (1) {
+			char rbuf[100], sbuf[100], hname[30];
+			r = recv(cs, rbuf, sizeof(rbuf), 0);
+			if (r == SOCKET_ERROR) {
+				printf("socket error");
+				break;
+			}
+			gethostname(hname, sizeof(hname));
+			sprintf(sbuf, "%s ---- %s", hname, rbuf);
+			r = send(cs, sbuf, strlen(sbuf), 0);
 		}
 	}
 	closesocket(ls);
